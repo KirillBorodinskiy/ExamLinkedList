@@ -103,18 +103,18 @@ void odstran_prvni(seznam& s){
     s.hlava = s.hlava->dalsi;
     delete pomocny;
 }
-int odstran(seznam& s,prvek* ktery){
+int odstran(seznam& s,prvek* ktery,bool voice){
     if(found!=1){return -1;}
     found=0;
     prvek* pomocny;
     if(ktery==s.hlava){
-        cout<<ktery->data<<" was deleted!(was first)"<<endl;
+        if(voice==1){cout<<ktery->data<<" was deleted!(was first)"<<endl;}
         pomocny = s.hlava;
         s.hlava = s.hlava->dalsi;
         delete pomocny;
         return 0;
     }else if(ktery->dalsi==s.zarazka){
-        cout<<ktery->data<<" was deleted!(was last)"<<endl;
+        if(voice==1){cout<<ktery->data<<" was deleted!(was last)"<<endl;}
         pomocny = find_before(s, ktery);
         delete s.zarazka;
         ktery->data=NULA;
@@ -124,7 +124,7 @@ int odstran(seznam& s,prvek* ktery){
     }else{
         pomocny = find_before(s,ktery);
         pomocny->dalsi = ktery->dalsi;
-        cout<<ktery->data<<" was deleted!(was in the middle)"<<endl;
+        if(voice==1){cout<<ktery->data<<" was deleted!(was in the middle)"<<endl;}
         delete ktery;
         return 0;
     }
@@ -140,13 +140,6 @@ prvek* najdi_z_konce(seznam& s, T data){
     if(!minuly){return nullptr;}else{return minuly;}//if minuly exists, returns minuly, else - nullptr
 }
 void zrus(seznam& s){
-    /* DELETE THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    while(!prazdny(s)){
-        odstran_prvni(s);
-    }
-    delete s.hlava;
-    delete s.zarazka;
-*/
     prvek* pomocny = s.hlava;
     while (s.hlava) {
         s.hlava = s.hlava->dalsi;
@@ -159,10 +152,7 @@ void vyprazdni(seznam& s){
     if(!prazdny(s)){
     for(prvek* pomocny = s.hlava; pomocny!=s.zarazka; pomocny = pomocny->dalsi){
         odstran_prvni(s);
-        //odstran(s,pomocny);
-        //cout<<"deleted "<<pomocny->data<<endl;
     }
-    //s.hlava=s.zarazka = new prvek{NULA,nullptr};
     s.hlava->data = NULA;
     s.hlava->dalsi = nullptr;
     }
@@ -183,6 +173,32 @@ void swapni(seznam& s1,seznam& s2){
     }
     zrus(s3);
 }
+prvek* najdi_nejmenshi(seznam& s){
+    if(prazdny(s)) {return nullptr;}
+    prvek* nejmenshi = s.hlava;
+
+    for (prvek* pomocny=s.hlava; pomocny != s.zarazka ; pomocny = pomocny->dalsi) {
+        if((pomocny->data)<(nejmenshi->data)){nejmenshi=pomocny;}
+    }
+
+    return nejmenshi;
+
+}
+void sortni(seznam& s){
+    seznam sorted;
+    vytvor(sorted);
+    while(!prazdny(s)) {
+        prvek *nejmenshi = najdi_nejmenshi(s);
+        vloz_na_konec(sorted, nejmenshi->data);
+        found=1;
+        odstran(s, nejmenshi,0);
+    }
+
+
+    swapni(sorted,s);
+    zrus(sorted);
+
+}
 int main() {
     seznam s1;
     vytvor(s1);
@@ -192,25 +208,29 @@ int main() {
     vloz_na_zacatek(s1, data);
     data="1st!";
     vloz_na_zacatek(s1, data);
-    //data = "Last!";
-    //vloz_na_konec(s1, data);
-    //zaplni_z_souboru(s1);
-    //vloz_za_zadanou(s1, najdi_z_pocatku(s1,"Last!"), "Something!");
+    data = "Last!";
+    vloz_na_konec(s1, data);
+    zaplni_z_souboru(s1);
+    vloz_za_zadanou(s1, najdi_z_pocatku(s1,"Last!"), "Something!");
     //vloz_za_zadanou(s1, najdi_z_pocatku(s1,"Trash2"), "Something!");
 
 
-    //odstran(s1, najdi_z_pocatku(s1,"1st!"));
-    //odstran(s1, najdi_z_pocatku(s1,"Something!"));
-    //odstran(s1, najdi_z_pocatku(s1,"Something!"));
-    //odstran(s1, najdi_z_konce(s1,"Something!"));
+    //odstran(s1, najdi_z_pocatku(s1,"1st!",1));
+    //odstran(s1, najdi_z_pocatku(s1,"Something!",1));
+    //odstran(s1, najdi_z_pocatku(s1,"Something!",1));
+    //odstran(s1, najdi_z_konce(s1,"Something!",1));
 
     //zrus(s1);
 
     cout<<"0 means not empty: "<<prazdny(s1)<<endl;
     cout<<"The amount of items in the list is: "<<pocet_prvku(s1)<<endl;
+    cout<<"The smallest item is : "<<najdi_nejmenshi(s1)->data<<endl;
 
-    //zapis_do_souboru(s1);
+    zapis_do_souboru(s1);
     cout<<"----------------THE LIST IS UNDER THE LINE----------------"<<endl;
+    vypis(s1);
+    sortni(s1);
+    cout<<"----------------THE MODIFIED LIST 1 IS UNDER THE LINE----------------"<<endl;
     vypis(s1);
     //vyprazdni(s1);
     //zrus(s1);
@@ -220,7 +240,7 @@ int main() {
     vypis(s1);
 */
 
-
+/*
     seznam s2;
     vytvor(s2);
     data="rd3!";
@@ -242,5 +262,5 @@ int main() {
     vypis(s1);
     cout<<"----------------THE MODIFIED LIST 2 IS UNDER THE LINE----------------"<<endl;
     vypis(s2);
-
+*/
 }
